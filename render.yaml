@@ -1,0 +1,42 @@
+# Render Blueprint for Centre Formation Oujda
+# Use this file when creating services on Render via the Dashboard or the CLI.
+# It defines two services: backend (web service) and frontend (static site).
+
+services:
+  - type: web
+    name: centre-formation-oujda-backend
+    env: node
+    region: oregon
+    plan: free
+    repo: "https://github.com/your-org/your-repo" # replace with your repository URL
+    branch: main
+    buildCommand: "cd backend && npm ci && npx prisma generate"
+    startCommand: "cd backend && npm start"
+    rootDir: backend
+    autoDeploy: true
+    envVars:
+      - key: JWT_SECRET
+      - key: DATABASE_URL
+      - key: STRIPE_SECRET_KEY
+      - key: STRIPE_WEBHOOK_SECRET
+      - key: FRONTEND_URL
+
+  - type: static_site
+    name: centre-formation-oujda-frontend
+    env: static
+    region: oregon
+    plan: free
+    repo: "https://github.com/your-org/your-repo" # replace with your repository URL
+    branch: main
+    buildCommand: "cd frontend && npm ci && npm run build"
+    publishPath: frontend/dist
+    rootDir: frontend
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+      - key: FRONTEND_URL
+
+# Notes:
+# - Replace `repo` values with your actual GitHub repository URL before connecting to Render.
+# - Adjust region/plan as needed.
+# - After pushing this file, connect the repo in Render and Render will create services from this blueprint.
