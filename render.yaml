@@ -10,8 +10,8 @@ services:
     plan: free
     repo: "https://github.com/nabilsouadki22-lgtm/FORMATION-OUJDA"
     branch: main
-    buildCommand: "npm ci && npx prisma generate"
-    startCommand: "npm start"
+    buildCommand: "npm --prefix backend ci && npm --prefix backend run prisma generate"
+    startCommand: "npm --prefix backend start"
     rootDir: backend
     autoDeploy: true
     envVars:
@@ -28,9 +28,9 @@ services:
     plan: free
     repo: "https://github.com/nabilsouadki22-lgtm/FORMATION-OUJDA"
     branch: main
-    buildCommand: "npm ci && npm run build"
-    publishPath: dist
-    rootDir: frontend
+    buildCommand: "npm --prefix frontend ci && npm --prefix frontend run build"
+    publishPath: frontend/dist
+    rootDir: .
     autoDeploy: true
     envVars:
       - key: NODE_ENV
