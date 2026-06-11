@@ -1,13 +1,18 @@
 const express = require('express')
 const Stripe = require('stripe')
-const prisma = require('../prismaClient')
+const db = require('../database')
 const authMiddleware = require('../middleware/authMiddleware')
 
 const router = express.Router()
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2022-11-15' })
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || ''
+const stripe = new Stripe(stripeSecretKey, { apiVersion: '2022-11-15' })
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 
 router.post('/create-checkout-session', authMiddleware, async (req, res) => {
+  if (!stripeSecretKey) {
+    return res.status(500).json({ error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY in the backend .env file.' })
+  }
+
   const { items } = req.body
   const userId = req.user.id
 
@@ -25,7 +30,7 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
         return res.status(400).json({ error: 'Each item requires a productId and quantity > 0.' })
       }
 
-      const product = await prisma.product.findUnique({ where: { id: parseInt(productId) } })
+      const product = await db.prisma.product.findUnique({ where: { id: parseInt(productId) } })
       if (!product) {
         return res.status(404).json({ error: `Product ${productId} not found` })
       }
@@ -40,7 +45,7 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
       })
     }
 
-    const order = await prisma.order.create({
+    const order = await db.prisma.order.create({
       data: {
         userId,
         totalAmount,
@@ -105,7 +110,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     const session = event.data.object
     const orderId = session.metadata?.orderId
     if (orderId) {
-      await prisma.order.update({
+      await db.prisma.order.update({
         where: { id: parseInt(orderId) },
         data: { status: 'completed' }
       })

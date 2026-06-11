@@ -3,6 +3,10 @@ FROM node:18-alpine as builder
 
 WORKDIR /app
 
+# Build-time args and env for Vite
+ARG VITE_API_BASE
+ENV VITE_API_BASE=${VITE_API_BASE}
+
 # Copy package files
 COPY frontend/package*.json ./
 

@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:windows": "cmd /c start-dev.cmd",
+    "public:windows": "cmd /c public.cmd",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix backend start",
+    "serve": "npm run build && npm --prefix backend start"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^10.0.3",
+    "localtunnel": "^2.0.2"
   }
 }

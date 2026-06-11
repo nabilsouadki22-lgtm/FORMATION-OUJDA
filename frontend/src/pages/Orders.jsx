@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../AuthContext'
 import { getOrders, exportOrders } from '../api'
 import SectionHeader from '../components/SectionHeader'
-import { MDBTypography, MDBBtn } from 'mdb-react-ui-kit'
+import Button from '../components/Button'
+import { MDBTypography } from 'mdb-react-ui-kit'
 
 function statusColor(status) {
   switch (status) {
@@ -70,7 +71,7 @@ export default function Orders() {
 
   if (!user) {
     return (
-      <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="card-modern glass-panel p-8 text-center">
         <MDBTypography className="text-slate-500">Veuillez vous connecter pour voir vos commandes.</MDBTypography>
       </div>
     )
@@ -80,42 +81,36 @@ export default function Orders() {
     <div className="space-y-6">
       <SectionHeader title="Mes commandes" subtitle="Consultez l'historique de vos achats." />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <MDBTypography className="text-sm text-slate-500">Vous pouvez exporter votre historique de commandes au format CSV.</MDBTypography>
-        <MDBBtn color="primary" size="sm" disabled={!orders.length || exporting} onClick={handleExport}>
-          {exporting ? 'Exportation…' : 'Exporter les commandes'}
-        </MDBBtn>
+      <div className="card-modern glass-panel p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <MDBTypography className="text-sm muted">Vous pouvez exporter votre historique de commandes au format CSV.</MDBTypography>
+          <Button className="btn-pill" onClick={handleExport} disabled={!orders.length || exporting}>{exporting ? 'Exportation…' : 'Exporter'}</Button>
+        </div>
       </div>
 
       {loading && <MDBTypography className="text-sm text-slate-500">Chargement des commandes…</MDBTypography>}
       {error && <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-rose-700">{error}</div>}
 
       {orders.length === 0 && !loading ? (
-        <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
-          <MDBTypography>Aucune commande trouvée pour le moment.</MDBTypography>
+        <div className="card-modern glass-panel p-8 text-center">
+          <MDBTypography className="muted">Aucune commande trouvée pour le moment.</MDBTypography>
         </div>
       ) : (
         <div className="grid gap-4">
           {orders.map((order) => (
-            <div key={order.id} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div key={order.id} className="card-modern p-5 transition duration-300 hover:-translate-y-1">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-lg font-semibold text-slate-900">Commande #{order.id}</div>
-                  <div className="text-sm text-slate-500">Placed {new Date(order.createdAt).toLocaleString()}</div>
+                  <div className="text-base font-semibold text-slate-900">Commande #{order.id}</div>
+                  <div className="text-sm muted">{new Date(order.createdAt).toLocaleString()}</div>
                 </div>
-                <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${statusColor(order.status)}`}>
+                <div className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColor(order.status)}`}>
                   {statusLabel(order.status)}
-                </span>
+                </div>
               </div>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">Total</div>
-                  <div className="mt-2 text-lg font-semibold text-slate-900">${order.totalAmount.toFixed(2)}</div>
-                </div>
-                <div className="rounded-3xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">Items</div>
-                  <div className="mt-2 text-lg font-semibold text-slate-900">{order.items.length}</div>
-                </div>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="muted text-sm">Items: {order.items.length}</div>
+                <div className="accent font-semibold text-lg">${order.totalAmount.toFixed(2)}</div>
               </div>
             </div>
           ))}

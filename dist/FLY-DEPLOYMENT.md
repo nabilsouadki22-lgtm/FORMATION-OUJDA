@@ -17,17 +17,17 @@ cd C:\xampp\php\htdocs\CentreFormationOujda
 flyctl launch --config fly-backend.toml --no-deploy
 
 # Set secrets (replace with your actual keys)
-flyctl secrets set -a formation-oujda-backend \
+flyctl secrets set -a CentreFormationOujda-backend \
   JWT_SECRET="your-secure-random-key-here" \
   STRIPE_SECRET_KEY="sk_test_your_key" \
   STRIPE_WEBHOOK_SECRET="whsec_your_webhook_secret" \
-  FRONTEND_URL="https://formation-oujda-frontend.fly.dev"
+  FRONTEND_URL="https://CentreFormationOujda-frontend.fly.dev"
 
 # Deploy
 flyctl deploy --config fly-backend.toml
 
 # Get backend URL
-flyctl status -a formation-oujda-backend
+flyctl status -a CentreFormationOujda-backend
 ```
 
 ### 2. Deploy Frontend
@@ -36,15 +36,15 @@ flyctl status -a formation-oujda-backend
 # Create and deploy frontend app (use fly-frontend.toml)
 flyctl launch --config fly-frontend.toml --no-deploy
 
-# Set environment variable with backend URL
-flyctl secrets set -a formation-oujda-frontend \
-  VITE_API_URL="https://formation-oujda-backend.fly.dev"
+# Set the backend URL for the built frontend bundle
+flyctl secrets set -a CentreFormationOujda-frontend \
+  VITE_API_BASE="https://CentreFormationOujda-backend.fly.dev"
 
-# Deploy
+# Deploy the frontend app; the build will bake the VITE_API_BASE value into the production bundle
 flyctl deploy --config fly-frontend.toml
 
 # Get frontend URL
-flyctl status -a formation-oujda-frontend
+flyctl status -a CentreFormationOujda-frontend
 ```
 
 ### 3. Update Backend Environment Variable
@@ -52,14 +52,14 @@ flyctl status -a formation-oujda-frontend
 Once you have the frontend URL from step 2, update the backend:
 
 ```bash
-flyctl secrets set -a formation-oujda-backend \
-  FRONTEND_URL="https://formation-oujda-frontend.fly.dev"
+flyctl secrets set -a CentreFormationOujda-backend \
+  FRONTEND_URL="https://CentreFormationOujda-frontend.fly.dev"
 ```
 
 ## URLs After Deployment
 
-- **Backend**: https://formation-oujda-backend.fly.dev
-- **Frontend**: https://formation-oujda-frontend.fly.dev
+- **Backend**: https://CentreFormationOujda-backend.fly.dev
+- **Frontend**: https://CentreFormationOujda-frontend.fly.dev
 
 ## For Production
 
@@ -70,7 +70,7 @@ Before going live, update:
 
 Update secrets:
 ```bash
-flyctl secrets set -a formation-oujda-backend \
+flyctl secrets set -a CentreFormationOujda-backend \
   JWT_SECRET="your-new-secure-key" \
   STRIPE_SECRET_KEY="sk_live_your_real_key"
 ```
@@ -79,14 +79,14 @@ flyctl secrets set -a formation-oujda-backend \
 
 View logs:
 ```bash
-flyctl logs -a formation-oujda-backend
-flyctl logs -a formation-oujda-frontend
+flyctl logs -a CentreFormationOujda-backend
+flyctl logs -a CentreFormationOujda-frontend
 ```
 
 Scale apps:
 ```bash
-flyctl scale vm dedicated-cpu-1x -a formation-oujda-backend
-flyctl scale count 2 -a formation-oujda-frontend  # 2 instances
+flyctl scale vm dedicated-cpu-1x -a CentreFormationOujda-backend
+flyctl scale count 2 -a CentreFormationOujda-frontend  # 2 instances
 ```
 
 ## Free Tier Limits

@@ -28,43 +28,89 @@ export default function Home() {
     )
   })
 
+  const navigate = (target) => {
+    window.location.hash = `#${target}`
+  }
+
   return (
     <div className="space-y-10">
-      <section className="rounded-[2rem] bg-gradient-to-br from-cyan-50 via-slate-50 to-violet-50 p-8 shadow-2xl shadow-slate-200/60">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_1.1fr] lg:items-center">
+      <section className="rounded-[2.5rem] bg-white/95 p-8 shadow-card border border-slate-200/60 glass-panel">
+        <div className="grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-center">
           <div className="space-y-6">
-            <span className="inline-flex rounded-full bg-emerald-100 px-4 py-1 text-sm font-semibold text-emerald-700">
-              Apprentissage et carrière
+            <span className="inline-flex rounded-full bg-cyan-50 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-700">
+              Plateforme de formation professionnelle
             </span>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-              Formations pour étudiants et professeurs à Oujda
+            <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+              L'écosystème d'apprentissage informatique à Oujda
             </h1>
-            <p className="max-w-2xl text-slate-600">
-              Découvrez des cours ciblés, gérez vos inscriptions, et facilitez l'enseignement avec une interface moderne et sécurisée.
+            <p className="max-w-2xl text-slate-600 text-lg leading-8">
+              Accédez à des parcours tech, gérez vos commandes, suivez vos cours, et lancez votre carrière avec une interface moderne pensée pour les étudiants et formateurs.
             </p>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Button onClick={() => (window.location.hash = '#courses')}>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Button onClick={() => navigate('courses')}>
                 Voir les cours
               </Button>
-              <Button variant="secondary" onClick={() => (window.location.hash = '#courses')}>
-                Cours enseignants
+              <Button variant="secondary" onClick={() => navigate('devpath')}>
+                Parcours Dev
               </Button>
-              <Button variant="outline" onClick={() => (window.location.hash = '#cart')} className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                Voir le panier
+              <Button variant="outline" onClick={() => navigate('cart')}>
+                Panier
               </Button>
             </div>
           </div>
-          <div className="relative rounded-[2rem] overflow-hidden border border-slate-200 bg-slate-100 shadow-xl">
+          <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-300/20">
             <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
-              alt="Étudiants en formation"
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+              alt="Formation informatique moderne"
               className="h-[460px] w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-200">Nouveaux parcours</p>
-              <h2 className="mt-2 text-2xl font-semibold">Idéal pour étudiants ambitieux</h2>
-              <p className="mt-2 text-sm text-cyan-100/90">Choisissez votre voie, créez votre emploi du temps et suivez votre progression chaque semaine.</p>
+              <p className="text-sm uppercase tracking-[0.24em] text-cyan-200">Parcours d'excellence</p>
+              <h2 className="mt-2 text-2xl font-semibold">Apprenez, pratiquez, maîtrisez</h2>
+              <p className="mt-2 text-sm text-cyan-100/90">Une expérience immersive pour les futurs développeurs et formateurs IT.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] bg-slate-950/95 p-8 text-white shadow-2xl shadow-slate-900/20 border border-white/10 glass-panel">
+        <div className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr] lg:items-center">
+          <div className="space-y-4">
+            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Parcours Dev</p>
+            <h2 className="text-3xl font-semibold sm:text-4xl">Votre chemin vers le développement web et logiciel</h2>
+            <p className="max-w-3xl text-slate-200">
+              Suivez un parcours structuré qui couvre l’initiation, la pratique avec React, le développement de back-end, et la préparation au marché IT.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+                onClick={() => (window.location.hash = '#devpath')}
+              >
+                Découvrir le parcours
+              </button>
+              <button
+                className="rounded-full border border-cyan-300 bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                onClick={() => (window.location.hash = '#courses')}
+              >
+                Voir les cours associés
+              </button>
+            </div>
+          </div>
+          <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-950/20">
+            <div className="mb-4 overflow-hidden rounded-[1.5rem] bg-slate-900">
+              <img
+                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=900&q=80"
+                alt="Roadmap développement"
+                className="h-64 w-full object-cover"
+              />
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Roadmap</p>
+              <h3 className="text-xl font-semibold text-white">4 étapes clés vers votre premier projet</h3>
+              <p className="text-sm text-slate-200">
+                Initiation → Frontend → Backend → Projet final. Un parcours pensé pour devenir développeur avec confiance.
+              </p>
             </div>
           </div>
         </div>
@@ -75,12 +121,12 @@ export default function Home() {
           <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Pour les étudiants & professeurs</p>
           <h2 className="text-3xl font-semibold text-slate-900">Fonctionnalités selon votre rôle</h2>
           <p className="max-w-3xl text-slate-600">
-            Une plateforme qui s'adapte aux besoins des étudiants en quête de formation et des professeurs qui souhaitent publier et gérer leurs cours.
+            Une plateforme spécialisée en développement informatique, adaptée aux étudiants qui veulent coder et aux professeurs qui veulent enseigner le digital.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[1.75rem] overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
+          <div className="card-modern overflow-hidden border border-slate-200/70 bg-white/95 shadow-xl">
             <img
               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80"
               alt="Etudiant utilisant la plateforme"
@@ -91,7 +137,7 @@ export default function Home() {
               <h3 className="mt-3 text-xl font-semibold text-slate-900">Apprendre facilement</h3>
               <ul className="mt-5 space-y-3 text-sm text-slate-600">
                 <li>• Parcours de cours clairs et accessibles</li>
-                <li>• Inscription simplifiée aux formations</li>
+                <li>• Inscription simplifiée aux formations en développement informatique</li>
                 <li>• Paiement sécurisé et suivi des commandes</li>
               </ul>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -101,7 +147,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
+          <div className="card-modern overflow-hidden border border-slate-200/70 bg-white/95 shadow-xl">
             <img
               src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80"
               alt="Professeur préparant un cours"
@@ -113,7 +159,7 @@ export default function Home() {
               <ul className="mt-5 space-y-3 text-sm text-slate-600">
                 <li>• Créer et publier facilement des cours</li>
                 <li>• Suivre vos étudiants et leurs inscriptions</li>
-                <li>• Analyser les performances de vos formations</li>
+                <li>• Analyser les performances de vos parcours de développement</li>
               </ul>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button onClick={() => (window.location.hash = '#courses')}>Créer un cours</Button>
@@ -122,6 +168,37 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        {[
+          {
+            title: 'Frontend moderne',
+            description: 'HTML, CSS, JavaScript, React et Vite pour créer des interfaces interactives.',
+            image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80'
+          },
+          {
+            title: 'Back-end & API',
+            description: 'Node.js, Express et bases de données pour construire des API robustes.',
+            image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80'
+          },
+          {
+            title: 'Cloud & déploiement',
+            description: 'Mettez vos applications en production et apprenez les bonnes pratiques DevOps.',
+            image: 'https://images.unsplash.com/photo-1515263487990-61c1d977a043?auto=format&fit=crop&w=900&q=80'
+          }
+        ].map((item) => (
+          <div key={item.title} className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 text-white shadow-2xl shadow-slate-800/20">
+            <div className="relative h-56 overflow-hidden">
+              <img src={item.image} alt={item.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <p className="text-xs uppercase tracking-[0.24em] text-cyan-300">{item.title}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-100">{item.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </section>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { AuthContext } from '../AuthContext'
 import { getCourses, getMyEnrollments, getMyCourses, createCourse, enrollCourse } from '../api'
 import CourseCard from '../components/CourseCard'
+import Modal from '../components/Modal'
 import SectionHeader from '../components/SectionHeader'
+import Button from '../components/Button'
 import {
   MDBBtn,
   MDBInput,
@@ -20,9 +22,32 @@ export default function Courses() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState('')
+  const [selectedCourse, setSelectedCourse] = useState(null)
+  const [teacherFilter, setTeacherFilter] = useState('')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
   const [newCourse, setNewCourse] = useState({ title: '', description: '', price: '' })
 
   const enrolledCourseIds = useMemo(() => myEnrollments.map((item) => item.courseId), [myEnrollments])
+
+  const filteredCourses = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    return courses.filter((course) => {
+      const matchesQuery =
+        !query ||
+        course.title.toLowerCase().includes(query) ||
+        (course.description || '').toLowerCase().includes(query) ||
+        (course.teacher?.email || '').toLowerCase().includes(query)
+      const matchesTeacher =
+        !teacherFilter ||
+        (course.teacher?.email || '').toLowerCase().includes(teacherFilter.trim().toLowerCase())
+      const price = Number(course.price || 0)
+      const matchesMin = minPrice === '' || price >= Number(minPrice)
+      const matchesMax = maxPrice === '' || price <= Number(maxPrice)
+      return matchesQuery && matchesTeacher && matchesMin && matchesMax
+    })
+  }, [courses, search, teacherFilter, minPrice, maxPrice])
 
   async function loadData() {
     setLoading(true)
@@ -51,10 +76,14 @@ export default function Courses() {
     loadData()
   }, [user, token])
 
+  const navigate = (target) => {
+    window.location.hash = `#${target}`
+  }
+
   async function handleEnroll(course) {
     if (!token) {
       setError('Veuillez vous connecter pour vous inscrire aux cours.')
-      return
+      return false
     }
     setMessage(null)
     setError(null)
@@ -62,10 +91,21 @@ export default function Courses() {
       await enrollCourse(course.id, token)
       setMessage(`Inscription réussie au cours « ${course.title} »`)
       loadData()
+      return true
     } catch (err) {
       setError(err?.error || "L'inscription a échoué")
+      return false
     }
   }
+
+  async function handleEnrollFromModal() {
+    if (!selectedCourse) return
+    const success = await handleEnroll(selectedCourse)
+    if (success) setSelectedCourse(null)
+  }
+
+  const openCourseModal = (course) => setSelectedCourse(course)
+  const closeCourseModal = () => setSelectedCourse(null)
 
   async function handleCreate(e) {
     e.preventDefault()
@@ -96,25 +136,21 @@ export default function Courses() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-8 text-white shadow-2xl shadow-slate-900/20">
+      <section className="rounded-[2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-8 text-white shadow-card">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div className="space-y-5">
             <span className="inline-flex rounded-full bg-white/10 px-4 py-1 text-sm font-semibold uppercase tracking-[0.24em] text-cyan-200">
-              Cours & Formations
+              Cours & Formations informatiques
             </span>
             <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
               Découvrez des parcours adaptés aux étudiants et aux professeurs
             </h1>
             <p className="max-w-3xl text-slate-200/90">
-              Explorez des cours inspirants, publiez vos propres formations ou suivez votre progression avec un espace dédié.
+              Explorez des parcours de développement informatique, publiez vos propres formations tech ou suivez votre progression avec un espace dédié.
             </p>
             <div className="flex flex-wrap gap-3">
-              <MDBBtn color="light" className="rounded-full px-6 py-3 text-slate-900">
-                Voir les cours
-              </MDBBtn>
-              <MDBBtn outline color="light" className="rounded-full px-6 py-3 text-white">
-                Inscription rapide
-              </MDBBtn>
+              <Button variant="ghost" className="bg-white/5 text-white" onClick={() => navigate('courses')}>Voir les cours</Button>
+              <Button variant="secondary" onClick={() => navigate('auth')}>Inscription rapide</Button>
             </div>
           </div>
           <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 shadow-xl">
@@ -140,6 +176,13 @@ export default function Courses() {
       {message && (
         <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
           {message}
+        </div>
+      )}
+
+      {!token && (
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-slate-700 shadow-sm">
+          <p className="font-semibold text-slate-900">Connectez-vous pour vous inscrire aux cours.</p>
+          <p className="mt-2 text-sm text-slate-600">Votre compte vous permet de suivre votre progression et de gérer vos formations depuis un seul endroit.</p>
         </div>
       )}
 
@@ -236,25 +279,75 @@ export default function Courses() {
       ) : null}
 
       <div className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <SectionHeader
-            title="Cours disponibles"
-            subtitle="Découvrez les cours du centre et inscrivez-vous selon vos objectifs."
-          />
-          {loading && <span className="text-slate-500">Chargement des cours…</span>}
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <SectionHeader
+              title="Cours disponibles"
+              subtitle="Découvrez les cours du centre et inscrivez-vous selon vos objectifs."
+            />
+            {loading && <span className="text-slate-500">Chargement des cours…</span>}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {['Frontend', 'Backend', 'Base de données', 'Cloud', 'Fullstack'].map((topic) => (
+              <button
+                key={topic}
+                type="button"
+                className="rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-700 transition hover:border-slate-300 hover:bg-slate-200"
+                onClick={() => setSearch(topic)}
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-3 lg:grid-cols-[1fr_0.7fr]">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <MDBInput
+              label="Recherche"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="rounded-full border-slate-200 bg-slate-50"
+            />
+            <MDBInput
+              label="Enseignant"
+              value={teacherFilter}
+              onChange={(e) => setTeacherFilter(e.target.value)}
+              className="rounded-full border-slate-200 bg-slate-50"
+            />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MDBInput
+              label="Prix min"
+              type="number"
+              min="0"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="rounded-full border-slate-200 bg-slate-50"
+            />
+            <MDBInput
+              label="Prix max"
+              type="number"
+              min="0"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="rounded-full border-slate-200 bg-slate-50"
+            />
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {courses.length === 0 && !loading ? (
+          {filteredCourses.length === 0 && !loading ? (
             <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">
-              Aucun cours disponible pour le moment.
+              Aucun cours ne correspond aux filtres.
             </div>
           ) : (
-            courses.map((course) => (
+            filteredCourses.map((course) => (
               <CourseCard
                 key={course.id}
                 course={course}
-                onEnroll={user && user.role !== 'teacher' ? () => handleEnroll(course) : null}
+                onEnroll={user && user.role !== 'teacher' ? () => handleEnroll(course) : undefined}
+                onView={openCourseModal}
                 disabled={!user || user.role === 'teacher'}
                 enrolled={enrolledCourseIds.includes(course.id)}
               />
@@ -262,6 +355,49 @@ export default function Courses() {
           )}
         </div>
       </div>
+      {selectedCourse && (
+        <Modal isOpen={!!selectedCourse} onClose={closeCourseModal} title={selectedCourse.title}>
+          <div className="space-y-5">
+            <div className="rounded-[1.5rem] bg-slate-100 p-4">
+              <p className="text-sm text-slate-500">{selectedCourse.description || 'Aucune description disponible.'}</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Catégorie</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{selectedCourse.teacher?.role === 'teacher' ? 'Cours enseignant' : 'Formation'}</p>
+              </div>
+              <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Prix</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">${selectedCourse.price?.toFixed(2) || '0.00'}</p>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Enseignant</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{selectedCourse.teacher?.email || 'Non renseigné'}</p>
+              </div>
+              <div className="rounded-[1.5rem] bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Inscriptions</p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">{selectedCourse.studentCount || 0}</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              {user && user.role !== 'teacher' ? (
+                <Button onClick={handleEnrollFromModal} disabled={selectedCourse ? enrolledCourseIds.includes(selectedCourse.id) : false}>
+                  {enrolledCourseIds.includes(selectedCourse.id) ? 'Déjà inscrit' : "S'inscrire"}
+                </Button>
+              ) : (
+                <div className="rounded-[1.5rem] bg-slate-100 p-4 text-sm text-slate-600">
+                  {user ? 'Les enseignants ne peuvent pas s’inscrire en tant qu’étudiant.' : 'Connectez-vous pour vous inscrire à ce cours.'}
+                </div>
+              )}
+              <Button variant="secondary" onClick={closeCourseModal}>
+                Fermer
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

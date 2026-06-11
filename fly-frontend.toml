@@ -1,12 +1,15 @@
 # Fly.io configuration for frontend
-app = "formation-oujda-frontend"
-primary_region = "fra"  # Frankfurt (Europe)
+app = "CentreFormationOujda-frontend"
+primary_region = "iad"  # Ashburn, Virginia (US)
 
 [build]
 dockerfile = "frontend.Dockerfile"
 
+[build.args]
+VITE_API_BASE = "https://CentreFormationOujda-backend.fly.dev"
+
 [env]
-VITE_API_URL = "https://formation-oujda-backend.fly.dev"
+VITE_API_BASE = "https://CentreFormationOujda-backend.fly.dev"
 
 [[services]]
 internal_port = 5173
@@ -29,3 +32,4 @@ timeout = "5s"
 grace_period = "30s"
 method = "GET"
 path = "/"
+port = 5173

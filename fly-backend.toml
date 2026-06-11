@@ -1,6 +1,6 @@
 # Fly.io configuration for backend
-app = "formation-oujda-backend"
-primary_region = "fra"  # Frankfurt (Europe)
+app = "CentreFormationOujda-backend"
+primary_region = "iad"  # Ashburn, Virginia (US)
 
 [build]
 dockerfile = "backend.Dockerfile"
@@ -10,7 +10,7 @@ JWT_SECRET = "your-jwt-secret-key-here-change-in-production"
 DATABASE_URL = "file:/data/dev.db"  # SQLite in Fly.io volume
 STRIPE_SECRET_KEY = "sk_test_placeholder"
 STRIPE_WEBHOOK_SECRET = "whsec_test_placeholder"
-FRONTEND_URL = "https://formation-oujda-frontend.fly.dev"
+FRONTEND_URL = "https://CentreFormationOujda-frontend.fly.dev"
 
 [mounts]
 source = "data"
@@ -38,3 +38,4 @@ timeout = "5s"
 grace_period = "30s"
 method = "GET"
 path = "/api/health"
+port = 4000

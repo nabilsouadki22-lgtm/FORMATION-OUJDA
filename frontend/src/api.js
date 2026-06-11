@@ -40,6 +40,17 @@ export async function getCourses() {
   return data
 }
 
+export async function getProfile(token) {
+  const res = await fetch(`${API_BASE}/api/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  const data = await res.json()
+  if (!res.ok) throw data
+  return data.user || data
+}
+
 export async function createCourse(course, token) {
   const res = await fetch(`${API_BASE}/api/courses`, {
     method: 'POST',
