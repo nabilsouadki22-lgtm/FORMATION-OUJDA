@@ -17,11 +17,7 @@ const sections = [
   },
   {
     id: "filestructure",
-    icon: "ti-folder-open",
-    label: "File Structure",
-    color: "#0F6E56",
-    bg: "#E1F5EE",
-  },
+    note: "Production URLs (Fly): Frontend=https://CentreFormationOujda-frontend.fly.dev, Backend=https://CentreFormationOujda-backend.fly.dev",
   {
     id: "features",
     icon: "ti-list-check",
@@ -253,6 +249,9 @@ export default function PRD() {
         </h1>
         <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: 0 }}>
           Full-stack · Single-file-per-page architecture · Zero-config deployment
+        </p>
+        <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: "6px 0 0" }}>
+          Note: If you want to publish without paid hosting, you can deploy the frontend to GitHub Pages or Cloudflare Pages (free) and deploy the backend to cPanel or any shared host. See the repo workflow `.github/workflows/deploy-frontend.yml` for an automated, no-billing frontend deploy.
         </p>
       </div>
 
